@@ -1,0 +1,46 @@
+################################################################################
+# Build, publish, and deploy CMS to Oracle Kubernetes Engine.                   #
+################################################################################
+name: deploy
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    environment: production
+    concurrency: cms-production
+    permissions:
+      contents: read
+      packages: write
+    # Native ARM build for the free Oracle A1 worker; free for public repositories.
+    runs-on: ubuntu-24.04-arm
+    env:
+      KUBECONFIG: /tmp/kubeconfig
+      CMS_HOSTNAME: ${{ vars.CMS_HOSTNAME }}
+    steps:
+      # Download the repository.
+      - uses: actions/checkout@v6
+
+      # Authenticate to GitHub's container registry with this job's temporary token.
+      - run: echo "$GH_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Build and publish an image tagged with this exact commit.
+      - run: docker build -t "ghcr.io/$GITHUB_REPOSITORY:$GITHUB_SHA" .
+      - run: docker push "ghcr.io/$GITHUB_REPOSITORY:$GITHUB_SHA"
+
+      # Use the namespace-limited Kubernetes credentials configured once in GitHub.
+      - run: printf '%s' "$OKE_KUBECONFIG" > "$KUBECONFIG"
+        env:
+          OKE_KUBECONFIG: ${{ secrets.KUBECONFIG }}
+
+      # Fill in the image tag and hostname, then apply the Kubernetes manifest.
+      - run: |
+          : "${CMS_HOSTNAME:?Set the CMS_HOSTNAME repository variable first}"
+          envsubst < .deployment.yml | kubectl apply -f -
+
+      # Wait until Apache, MariaDB, and Caddy are ready.
+      - run: kubectl rollout status deployment/cms -n cms --timeout=300s

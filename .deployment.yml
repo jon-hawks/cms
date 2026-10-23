@@ -1,0 +1,117 @@
+################################################################################
+# One OKE pod: Apache/PHP, MariaDB, and automatic HTTPS with Caddy.               #
+################################################################################
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cms
+  namespace: cms
+spec:
+  replicas: 1
+  # Stop the old pod before another MariaDB process opens the same data.
+  strategy: {type: Recreate}
+  selector:
+    matchLabels: {app: cms}
+  template:
+    metadata:
+      labels: {app: cms}
+    spec:
+      automountServiceAccountToken: false
+      # Create writable directories once; later deployments keep their contents.
+      initContainers:
+        - name: storage
+          image: busybox:1.37
+          command: [sh, -c, 'mkdir -p /data/mysql /data/tls /data/upload /data/user /data/pix /data/sessions; chown 33:33 /data/upload /data/user /data/pix /data/sessions']
+          volumeMounts:
+            - {name: data, mountPath: /data}
+      containers:
+        # Application image built from this commit; passwords come from a Secret.
+        - name: cms
+          image: ghcr.io/jon-hawks/cms:$GITHUB_SHA
+          env:
+            - name: POD_IP
+              valueFrom: {fieldRef: {fieldPath: status.podIP}}
+          resources:
+            requests: {cpu: 50m, memory: 128Mi}
+            limits: {memory: 512Mi}
+          readinessProbe:
+            tcpSocket: {port: 8080}
+          volumeMounts:
+            - {name: configuration, subPath: private.php, mountPath: /var/www/html/private.php, readOnly: true}
+            - {name: data, subPath: upload, mountPath: /var/www/html/asset/upload}
+            - {name: data, subPath: user, mountPath: /var/www/html/asset/image/user}
+            - {name: data, subPath: pix, mountPath: /var/www/html/asset/image/pix}
+            - {name: data, subPath: sessions, mountPath: /var/lib/php/sessions}
+
+        # Only this pod can reach MariaDB; data stays on the existing boot disk.
+        - name: mariadb
+          image: mariadb:11.4
+          args: [--bind-address=127.0.0.1]
+          envFrom:
+            - secretRef: {name: mariadb}
+          resources:
+            requests: {cpu: 100m, memory: 256Mi}
+            limits: {memory: 1Gi}
+          readinessProbe:
+            exec:
+              command: [healthcheck.sh, --connect, --innodb_initialized]
+            timeoutSeconds: 5
+          volumeMounts:
+            - {name: data, subPath: mysql, mountPath: /var/lib/mysql}
+            - {name: database-init, mountPath: /docker-entrypoint-initdb.d, readOnly: true}
+
+        # Obtain and renew free certificates; keep them across redeployments.
+        - name: caddy
+          image: caddy:2-alpine
+          command: [caddy]
+          args: [reverse-proxy, --from, "$CMS_HOSTNAME", --to, "$(POD_IP):8080"]
+          # Use the pod address so the CMS's existing environment detection works.
+          env:
+            - name: POD_IP
+              valueFrom: {fieldRef: {fieldPath: status.podIP}}
+          resources:
+            requests: {cpu: 25m, memory: 32Mi}
+            limits: {memory: 128Mi}
+          readinessProbe:
+            tcpSocket: {port: 80}
+          volumeMounts:
+            - {name: data, subPath: tls, mountPath: /data}
+
+      # Free single-node storage: survives pod replacement, NOT worker replacement.
+      volumes:
+        - name: configuration
+          secret: {secretName: cms}
+        - name: database-init
+          configMap: {name: mariadb-init}
+        - name: data
+          hostPath: {path: /var/lib/cms, type: DirectoryOrCreate}
+---
+# The existing models set global MariaDB options during first-run initialization.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mariadb-init
+  namespace: cms
+data:
+  permissions.sql: "GRANT SUPER ON *.* TO 'cms'@'%';"
+---
+################################################################################
+# Reuse the existing free Network Load Balancer and its public IP.              #
+################################################################################
+apiVersion: v1
+kind: Service
+metadata:
+  name: cms
+  namespace: cms
+  annotations:
+    oci.oraclecloud.com/load-balancer-type: nlb
+    oci-network-load-balancer.oraclecloud.com/subnet: ocid1.subnet.oc1.iad.aaaaaaaagjkvx24fdldm55fg7xkso7sacs3odqsjkzh42gl4jn6dl345cfra
+    oci-network-load-balancer.oraclecloud.com/is-preserve-source: "true"
+    oci-network-load-balancer.oraclecloud.com/security-list-management-mode: None
+spec:
+  type: LoadBalancer
+  externalTrafficPolicy: Local
+  selector: {app: cms}
+  ports:
+    - {name: http, port: 80, targetPort: 80, nodePort: 30080}
+    - {name: https, port: 443, targetPort: 443, nodePort: 30443}
