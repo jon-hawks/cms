@@ -20,7 +20,7 @@ spec:
       # Create writable directories once; later deployments keep their contents.
       initContainers:
         - name: storage
-          image: busybox:1.37
+          image: docker.io/library/busybox:1.37
           command: [sh, -c, 'mkdir -p /data/mysql /data/tls /data/upload /data/user /data/pix /data/sessions; chown 33:33 /data/upload /data/user /data/pix /data/sessions']
           volumeMounts:
             - {name: data, mountPath: /data}
@@ -45,7 +45,7 @@ spec:
 
         # Only this pod can reach MariaDB; data stays on the existing boot disk.
         - name: mariadb
-          image: mariadb:11.4
+          image: docker.io/library/mariadb:11.4
           args: [--bind-address=127.0.0.1]
           envFrom:
             - secretRef: {name: mariadb}
@@ -62,7 +62,7 @@ spec:
 
         # Obtain and renew free certificates; keep them across redeployments.
         - name: caddy
-          image: caddy:2-alpine
+          image: docker.io/library/caddy:2-alpine
           command: [caddy]
           args: [reverse-proxy, --from, "$CMS_HOSTNAME", --to, "$(POD_IP):8080"]
           # Use the pod address so the CMS's existing environment detection works.
