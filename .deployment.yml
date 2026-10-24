@@ -8,6 +8,8 @@ metadata:
   namespace: cms
 spec:
   replicas: 1
+  # Keep one previous deployment for rollback; discard older revisions.
+  revisionHistoryLimit: 1
   # Stop the old pod before another MariaDB process opens the same data.
   strategy: {type: Recreate}
   selector:
