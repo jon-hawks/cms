@@ -31,7 +31,7 @@
 #header td > div, #navbar td > div, #header-logo, #header-inner {
     background: rgba(0, 0, 0, .25);
     border-radius: var(--border-radius);
-    box-shadow: var(--box-shadow-dark);
+    box-shadow: var(--box-shadow-dark), var(--box-shadow) inset;
     height: calc(100% - 8px);
     left: 50%;
     position: absolute;
@@ -121,36 +121,43 @@
 #header div a[href="/"]:hover, #navbar div a[href="/"]:hover,
 #header div.active a[href="/"], #navbar div.active a[href="/"] {
     text-shadow: 0 0 4px red, 0 0 8px fuchsia !important;
+    background-color: rgba(255, 0, 128, .05);
 }
 #header div a[href="/code"]:focus, #navbar div a[href="/code"]:focus,
 #header div a[href="/code"]:hover, #navbar div a[href="/code"]:hover,
 #header div.active a[href="/code"], #navbar div.active a[href="/code"] {
     text-shadow: 0 0 4px blue, 0 0 8px lime !important;
+    background-color: rgba(0, 186, 255, .05);
 }
 #header div a[href="/dox"]:focus, #navbar div a[href="/dox"]:focus,
 #header div a[href="/dox"]:hover, #navbar div a[href="/dox"]:hover,
 #header div.active a[href="/dox"], #navbar div.active a[href="/dox"] {
     text-shadow: 0 0 4px lime, 0 0 8px red !important;
+    background-color: rgba(215, 167, 0, .05);
 }
-#header div a[href="/warez"]:focus, #navbar div a[href="/warez"]:focus,
-#header div a[href="/warez"]:hover, #navbar div a[href="/warez"]:hover,
-#header div.active a[href="/warez"], #navbar div.active a[href="/warez"] {
+#header div a[href="/upload"]:focus, #navbar div a[href="/upload"]:focus,
+#header div a[href="/upload"]:hover, #navbar div a[href="/upload"]:hover,
+#header div.active a[href="/upload"], #navbar div.active a[href="/upload"] {
     text-shadow: 0 0 4px teal, 0 0 8px aqua !important;
+    background-color: rgba(0, 189, 189, .05);
 }
-#header div a[href="/toolz"]:focus, #navbar div a[href="/toolz"]:focus,
-#header div a[href="/toolz"]:hover, #navbar div a[href="/toolz"]:hover,
-#header div.active a[href="/toolz"], #navbar div.active a[href="/toolz"] {
+#header div a[href="/tool"]:focus, #navbar div a[href="/tool"]:focus,
+#header div a[href="/tool"]:hover, #navbar div a[href="/tool"]:hover,
+#header div.active a[href="/tool"], #navbar div.active a[href="/tool"] {
     text-shadow: 0 0 4px red, 0 0 8px orange !important;
+    background-color: rgba(255, 111, 0, .05);
 }
 #header div a[href="/forum"]:focus, #navbar div a[href="/forum"]:focus,
 #header div a[href="/forum"]:hover, #navbar div a[href="/forum"]:hover,
 #header div.active a[href="/forum"], #navbar div.active a[href="/forum"] {
     text-shadow: 0 0 4px red, 0 0 8px lime !important;
+    background-color: rgba(215, 167, 0, .05);
 }
 #header div a[href="/email"]:focus, #navbar div a[href="/email"]:focus,
 #header div a[href="/email"]:hover, #navbar div a[href="/email"]:hover,
 #header div.active a[href="/email"], #navbar div.active a[href="/email"] {
     text-shadow: 0 0 4px lime, 0 0 8px darkgreen !important;
+    background-color: rgba(0, 174, 0, .05);
 }
 
 /* Logo */
@@ -180,10 +187,12 @@
     text-align: center;
 }
 #header-inner tr:not(:last-of-type) td:not(#header-subtitle) {
-    border-bottom: .125vw solid rgba(255, 255, 255, .04687);
+    /*border-bottom: .125vw solid rgba(255, 255, 255, .04687);*/
+    border-bottom: 1px solid rgba(255, 255, 255, .1);
 }
 #header-inner td:not(:last-of-type) {
-    border-right: .125vw solid rgba(255, 255, 255, .04687);
+    /*border-right: .125vw solid rgba(255, 255, 255, .04687);*/
+    border-right: 1px solid rgba(255, 255, 255, .1);
 }
 #header-inner td:first-of-type, #header-inner td:last-of-type {
     font-size: 13px;
@@ -205,7 +214,6 @@
 /* Inner Header Text-only cells. */
 #header-username, #header-forum, #header-imageboard, #header-encrypted, #header-websocket {
     padding-left: 4px;
-    text-align: left !important;
 }
 
 /* Inner Header Subtitle Loading Notification */
@@ -225,8 +233,8 @@
 /* Inner Header Links */
 #header-inner td > a {
     display: inline-block;
-    height: 100%;
-    width: 100%;
+    /*height: 100%;*/
+    /*width: 100%;*/
 }
 #header-inner td > a:before {
   content: "";

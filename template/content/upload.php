@@ -16,17 +16,26 @@
                         <table>
                             <tr>
                                 <td><label for="privacy-private">Private:</label></td>
-                                <td colspan="2" <?php if(!$user->status()) echo 'title="You must be logged in for uploading to private storage."'; ?>><div class="button-wrap<?php if(!$user->status()) echo ' disabled'; ?>">
-                                    <input type="radio" name="privacy" value="private" id="privacy-private" <?php if(!$user->status()) echo 'disabled '; ?>/>
-                                </div></td>
+                                <td colspan="2" <?php if(!$user->status()) echo 'title="You must be logged in for uploading to private storage."'; ?>>
+                                    <div class="button-wrap<?php if(!$user->status()) echo ' disabled'; ?>">
+                                        <label class="button" for="privacy-private"></label>
+                                        <input type="radio" name="privacy" value="private" id="privacy-private" <?php if(!$user->status()) echo 'disabled '; ?>/>
+                                    </div>
+                                </td>
                             </tr>
                             <tr>
                                 <td><label for="privacy-public">Public:</label></td>
-                                <td colspan="2"><div class="button-wrap"><input type="radio" name="privacy" value="public" id="privacy-public" checked /></div></td>
+                                <td colspan="2">
+                                    <div class="button-wrap">
+                                        <label class="button" for="privacy-public"></label>
+                                        <input type="radio" name="privacy" value="public" id="privacy-public" checked />
+                                    </div>
+                                </td>
                             </tr>
                             <tr>
                                 <td><label for="privacy-password">Password:</label></td>
                                 <td colspan="2"><div class="button-wrap">
+                                    <label class="button" for="privacy-password"></label>
                                     <input type="radio" name="privacy" value="password" id="privacy-password" class="radio-toggle" />
                                     <input type="password" name="password" placeholder="Password" id="upload-password" autocomplete="off" />
                                 </div></td>

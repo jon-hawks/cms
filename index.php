@@ -18,6 +18,11 @@ require('class/view.php');
 require('class/security.php');
 $security = new Security;
 
+/* Start WebSocket on demand in every environment; close the availability probe immediately. */
+$websocket = @fsockopen('127.0.0.1', 8081, $errno, $error, 0.1);
+if($websocket) fclose($websocket);
+else exec(escapeshellarg(PHP_BINDIR.'/php').' '.escapeshellarg(__DIR__.'/class/websocket.php').' </dev/null >/dev/null 2>&1 &');
+
 /* Resolve the URI. */
 require('class/uri.php');
 $uri = new URI;

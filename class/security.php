@@ -97,9 +97,11 @@ class Security {
                                 https://cdn.jsdelivr.net
                                 https://cdnjs.cloudflare.com
                                 https://csi.gstatic.com
+                                https://ep1.adtrafficquality.google
                                 https://fonts.googleapis.com
                                 https://pagead2.googlesyndication.com
-                                wss://".$_SERVER['SERVER_NAME'].":8080;
+                                https://www.google-analytics.com
+                                wss://".$_SERVER['SERVER_NAME'].";
 
                 default-src     'nonce-".$this->nonce()."'
                                 'self'
@@ -114,10 +116,13 @@ class Security {
                 frame-ancestors 'self';
 
                 frame-src       'self'
-                                https://googleads.g.doubleclick.net;
+                                https://ep2.adtrafficquality.google
+                                https://googleads.g.doubleclick.net
+                                https://www.google.com;
 
                 img-src         'self'
                                 data:
+                                https://ep1.adtrafficquality.google
                                 https://pagead2.googlesyndication.com
                                 https://storage.googleapis.com
                                 https://www.google-analytics.com;
@@ -137,6 +142,7 @@ class Security {
                                 https://cdn.jsdelivr.net
                                 https://cdn.polyfill.io
                                 https://cdnjs.cloudflare.com
+                                https://ep2.adtrafficquality.google
                                 https://pagead2.googlesyndication.com
                                 https://www.gitcdn.xyz
                                 https://www.google-analytics.com

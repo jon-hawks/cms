@@ -42,11 +42,21 @@ window.listen(["mousedown", "keydown"], function(event){
 /*-----------------------------------------------------------------------------\
 | Disable Dark Reader.                                                         |
 \-----------------------------------------------------------------------------*/
-window.listen("DOMContentLoaded", function(){
-    if(document.querySelector(".darkreader")){
-        alert("I love Dark Reader too!\n\nHowever, Dark Reader is not necessary on this site.\nIn fact, it only messes up its styling; I suggest you disable it for this site.");
-    }
-});
+// TODO: Remove? No longer needed?
+//window.listen("DOMContentLoaded", function(){
+//    if(document.querySelector(".darkreader")){
+//        alert("I love Dark Reader too!\n\nHowever, Dark Reader is not necessary on this site.\nIn fact, it only messes up its styling; I suggest you disable it for this site.");
+//    }
+//});
+
+/*-----------------------------------------------------------------------------\
+| Transition background colors for AJAX. We do this via JS so we don't get a   |
+| flash of unstyled content (in this case a white background when visiting the |
+| site for the first time).                                                    |
+\-----------------------------------------------------------------------------*/
+//window.listen("DOMContentLoaded", function(){
+//    document.documentElement.style.transition = "background-color 1s";
+//});
 
 //var eventKeydownButton = function(event){
 //    if(event.keyCode !== 13) return;

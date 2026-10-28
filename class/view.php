@@ -174,8 +174,8 @@ abstract class View {
     +--------------------------------------------------------------------------|
     | Example usage:                                                           |
     |                                                                          |
-    |     <input name="<?php echo $this->form_token('username'); ?>" />        |
-    |     <input name="<?php echo $this->form_token('password'); ?>" />        |
+    |     <input name="<?php echo $this->form_token('username'); ? >" />       |
+    |     <input name="<?php echo $this->form_token('password'); ? >" />       |
     |                                                                          |
     +---------+--------+--------+----------------------------------------------+
     | @param  | string | $field | Field name.                                  |
@@ -219,7 +219,12 @@ abstract class View {
         if(!$layout) $layout = $this->html['layout'];
 
         // 404 on missing content.
-        if(!$this->html['content'] && !$this->use_cms && !$this->use_explorer){
+        //if(!$this->html['layout'] && !$this->html['content'] && !$this->use_cms && !$this->use_explorer){
+        //    http_response_code(404);
+        //}
+        // 404 when neither a route-specific layout nor content exists.
+        global $uri;
+        if(!is_file(TEMPLATE.'/layout'.$uri->route.'.php') && !$this->html['content'] && !$this->use_cms && !$this->use_explorer){
             http_response_code(404);
         }
 

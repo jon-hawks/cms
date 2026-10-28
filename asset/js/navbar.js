@@ -161,15 +161,15 @@ if(!CSS.supports("backdrop-filter", "blur(2px)") && !CSS.supports("-webkit-backd
             iframe.contentDocument.body.querySelector("#footer").style.display = "none";
 
             /* Repair target's background we lost due to embedding an iframe. */
-            //var div = document.createElement("div");
-            //div.style.backgroundColor = window.getComputedStyle(target, null).getPropertyValue("background-color");
-            //div.style.height          = "100%";
-            //div.style.left            = "0";
-            //div.style.position        = "absolute";
-            //div.style.top             = "0";
-            //div.style.width           = "100%";
-            //div.style.zIndex          = target.style.zIndex - 1;
-            //target.appendChild(div);
+            var div = document.createElement("div");
+            div.style.backgroundColor = window.getComputedStyle(target, null).getPropertyValue("background-color");
+            div.style.height          = "100%";
+            div.style.left            = "0";
+            div.style.position        = "absolute";
+            div.style.top             = "0";
+            div.style.width           = "100%";
+            div.style.zIndex          = target.style.zIndex - 1;
+            target.appendChild(div);
 
             /* Synchronize iframe scroll with page. */
             iframe.contentWindow.scrollTo(window.scrollX, window.scrollY - target.getBoundingClientRect().top);

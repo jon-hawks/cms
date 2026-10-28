@@ -28,8 +28,8 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # Build and publish an image tagged with this exact commit.
-      - run: docker build -t "ghcr.io/$GITHUB_REPOSITORY:$GITHUB_SHA" .
+      # Refresh the latest PHP base; publish an image tagged with this exact commit.
+      - run: docker build --pull -t "ghcr.io/$GITHUB_REPOSITORY:$GITHUB_SHA" .
       - run: docker push "ghcr.io/$GITHUB_REPOSITORY:$GITHUB_SHA"
 
       # Use the namespace-limited Kubernetes credentials configured once in GitHub.

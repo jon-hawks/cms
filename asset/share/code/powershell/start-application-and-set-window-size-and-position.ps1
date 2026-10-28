@@ -46,17 +46,41 @@ if($arguments -eq ""){
     Start-Process -FilePath $bin -ArgumentList $arguments
 }
 
-# Ensure window has appeared (adjust to wait for application startup time).
-sleep $wait
+# Try to get window for up to 1 minute; we do this because applications update
+# themselves, take a while to draw their windows, etc.
+[float]$tick = 0
+[bool]$success = $false
+while(!$success -and $tick -lt 60){
+    try{
 
-# Grab window (adjust to match a portion of the application's title).
-$window = (Get-Process | where {$_.mainWindowTitle -match $title}).MainWindowHandle
+        # Grab window (adjust to match a portion of the application's title).
+        $window = (Get-Process | where {$_.mainWindowTitle -match $title}).MainWindowHandle
 
-# Ensure window handle is valid.
-if($window -eq [IntPtr]::Zero){return "Cannot find window with this Title"}
+        # Bind RECT object to window.
+        [void][Win32]::GetWindowRect($window, [ref](New-Object RECT))
 
-# Bind RECT object to window.
-[void][Win32]::GetWindowRect($window, [ref](New-Object RECT))
+        # Set window position and size.
+        [void][Win32]::MoveWindow($window, $x, $y, $width, $height, $true)
 
-# Set window position and size.
-[void][Win32]::MoveWindow($window, $x, $y, $width, $height, $true)
+        # We did it!
+        $success = $true
+    }catch{}
+
+    # Wait 50ms.
+    Start-Sleep -Milliseconds 50
+    $tick += .05
+}
+
+# Try to resize for x seconds; we do this because some windows resize themselves
+# after being drawn.
+$tick = 0
+while($tick -lt $wait){
+    try{
+        # Set window position and size.
+        [void][Win32]::MoveWindow($window, $x, $y, $width, $height, $true)
+    }catch{}
+
+    # Wait 50ms.
+    Start-Sleep -Milliseconds 50
+    $tick += .05
+}

@@ -22,8 +22,12 @@ $socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
 
 // Socket creation.
 socket_set_option($socket, SOL_SOCKET, SO_REUSEADDR, 1);
-socket_bind($socket, $host, $port);
-socket_listen($socket);
+
+// Concurrent requests may start contenders; only the process owning the listener continues.
+if(!@socket_bind($socket, $host, $port) || !@socket_listen($socket)){
+    socket_close($socket);
+    exit;
+}
 
 /*-------------------------------------------------------------------------\
 |  Main program loop.                                                      |
@@ -47,7 +51,9 @@ while(true){
     \---------------------------------------------------------------------*/
     if(in_array($socket, $changed)){
         $socket_new = socket_accept($socket);
-        $header     = header_parse(socket_read($socket_new, 1024));
+        $request    = socket_read($socket_new, 1024);
+        if(!$request){ socket_close($socket_new); continue; }
+        $header     = header_parse($request);
         print_r($header['Cookie']['PHPSESSID']);
         $clients[]  = $socket_new;
         socket_getpeername($socket_new, $ip);

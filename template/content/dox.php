@@ -1,5 +1,5 @@
 <?php defined('ROOTPATH') || die('Denied access to: '.__FILE__); ?>
-<article id="documents">
+<article>
     <h1>Documents</h1>
     <p>
         A proof-of-concept playground.<br />

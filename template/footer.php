@@ -18,11 +18,11 @@
         <td>
             <a class="ajax" href="/policy#privacy">Privacy Policy</a>
         </td>
-        <td>
+        <td id="chat">
             <!-- The chat. -->
             <input id="chat-toggle" type="checkbox" />
             <label for="chat-toggle">Chat</label>
-            <table id="chat">
+            <table>
                 <tr>
                     <td colspan="5" rowspan="3">
                         <fieldset id="chat-messages"></fieldset>
@@ -32,8 +32,8 @@
                 <tr></tr>
                 <tr></tr>
                 <tr>
-                    <td colspan="4">Message</td>
-                    <td colspan="1">Send</td>
+                    <td colspan="4"><input type="text" name="message" /></td>
+                    <td colspan="1"><div><input type="button" name="send" value="Send" /></div></td>
                     <td colspan="2">Settings</td>
                 </tr>
             </table>

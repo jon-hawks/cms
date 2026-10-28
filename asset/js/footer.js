@@ -23,23 +23,28 @@ document.addEventListener("click", function(event){
 window.websocket = function(){
 
     /* Get relevant DOM elements. */
-    websocket.label = document.querySelector("label[for=\"chat\"]");
+    websocket.labels = document.querySelectorAll("#header-websocket label, label[for=\"chat-toggle\"]");
     websocket.chat = document.getElementById("chat-messages");
 
-    /* Feedback. */
-    websocket.label.className   = "orange";
-    websocket.label.textContent = "Connecting";
+    /* Keep the header and chat toggle in sync with the connection. */
+    function status(color, text, title){
+        websocket.labels.forEach(function(label){
+            label.className   = color;
+            label.textContent = text;
+            label.title       = title || "";
+        });
+    }
+    status("orange", "Connecting");
 
     /* Create the WebSocket object. */
     try{
-        websocket.handle = new WebSocket("wss://" + window.websocketAddress + ":8080");
+        websocket.handle = new WebSocket(window.websocketAddress);
     }
 
     /* Feedback. */
     catch(error){
-        websocket.label.className   = "red";
-        websocket.label.title       = "Error: " + error;
-        websocket.label.textContent = "Offline";
+        status("red", "Offline", "Error: " + error);
+        return;
     }
 
     /*-------------------------------------------------------------------------\
@@ -48,8 +53,7 @@ window.websocket = function(){
     websocket.handle.onopen = function(event){
 
         /* Feedback. */
-        websocket.label.className = "green";
-        websocket.label.textContent = "Online";
+        status("green", "Online");
 
         /* Feedback in chat. */
         var message         = document.createElement("span");
@@ -68,6 +72,7 @@ window.websocket = function(){
 
             /* Chat message from user. */
             case "chat":
+                // TODO: Render chat as text and validate sender identity/origin server-side.
                 message = document.createElement("div");
                 message.innerHTML  = "<span class=\"user-name\">"    + data.name    + "</span>: ";
                 message.innerHTML += "<span class=\"user-message\">" + data.message + "</span>";
@@ -104,6 +109,9 @@ window.websocket = function(){
     \-------------------------------------------------------------------------*/
     websocket.handle.onclose = function(event){
 
+        /* Update both connection indicators immediately. */
+        status("red", "Offline");
+
         /* Feedback in chat. */
         message = document.createElement("div");
         message.innerHTML  = "<span class=\"user-name\">System</span>: ";
@@ -118,3 +126,59 @@ window.websocket = function(){
 
 /* Execute on page load and transition. */
 window.listen("load", websocket);
+
+/*-----------------------------------------------------------------------------\
+| Send a message on the websocket.                                             |
+\-----------------------------------------------------------------------------*/
+var eventMousedownSendChatMessage = function(event){
+    if(event.button !== 0) return;
+    for(var target = event.target; target && target !== this; target = target.parentNode){
+        if(typeof target.matches === "function" && target.matches("#chat input[name=\"send\"]")){
+            event.preventDefault();
+
+            /* Get message. */
+            var message = document.querySelector("#chat input[name=\"message\"]");
+
+            /* Send message. */
+            window.websocket.handle.send(JSON.stringify({type: "chat", name: document.querySelector("#header-username a.ajax").innerText, message: message.value}));
+
+            /* Clear input box. */
+            message.value = "";
+            return;
+        }
+    }
+};
+document.removeEventListener("mousedown", eventMousedownSendChatMessage);
+document.addEventListener("mousedown", eventMousedownSendChatMessage);
+
+/* Disable standard click; using mousedown instead. */
+var eventClickSendChatMessage = function(event){
+    if(event.button !== 0) return;
+    for(var target = event.target; target && target !== this; target = target.parentNode){
+        if(typeof target.matches === "function" && target.matches("#chat input[name=\"send\"]")){
+            event.preventDefault();
+            return;
+        }
+    }
+};
+document.removeEventListener("click", eventClickSendChatMessage);
+document.addEventListener("click", eventClickSendChatMessage);
+
+/* Event handler for message input on [Enter] keypress. */
+var eventKeydownMessage = function(event){
+    if(event.keyCode !== 13 || event.shiftKey || event.altKey || event.ctrlKey) return;
+    for(var target = event.target; target && target !== this; target = target.parentNode){
+        if(typeof target.matches === "function" && target.matches("#chat input[name=\"message\"]")){
+            event.preventDefault();
+
+            /* Send message. */
+            window.websocket.handle.send(JSON.stringify({type: "chat", name: document.querySelector("#header-username a.ajax").innerText, message: target.value}));
+
+            /* Clear input box. */
+            target.value = "";
+            return;
+        }
+    }
+};
+document.removeEventListener("keydown", eventKeydownMessage);
+document.addEventListener("keydown", eventKeydownMessage);

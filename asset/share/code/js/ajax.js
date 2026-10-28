@@ -1,5 +1,7 @@
 /*-----------------------------------------------------------------------------\
 | Requests a new page (or submits a <form>) via AJAX and updates the UI.       |
+|                                                                              |
+| This is the actual code used by this site, so it has lots of customization.  |
 +------------------------------------------------------------------------------+
 | Usage:                                                                       |
 |     <a class="ajax" href="/">AJAX Link</a>                                   |
@@ -146,8 +148,8 @@ function loadPage(link, scrollY, method, params){
                     newClock.parentNode.replaceChild(oldClock, newClock);
                 }catch(error){console.error(error)}
                 try{
-                    var newChat = response.querySelector("label[for=\"chat\"]");
-                    var oldChat = document.querySelector("label[for=\"chat\"]");
+                    var newChat = response.querySelector("#chat");
+                    var oldChat = document.querySelector("#chat");
                     newChat.parentNode.replaceChild(oldChat, newChat);
                 }catch(error){console.error(error)}
                 try{

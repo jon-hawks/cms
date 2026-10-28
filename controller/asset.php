@@ -8,6 +8,7 @@ class Asset extends Controller {
         // Load asset.
         global $uri;
         if(in_array($uri->class, [ASSET, CSS, JS])){
+            // TODO: Constrain resolved asset paths and enforce protected-upload access.
             $asset = ltrim($uri->route, '/');
             if(is_file($asset)) View::file($asset);
         }

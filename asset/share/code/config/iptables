@@ -71,6 +71,8 @@
 
 ################################################################################
 # Allow WebSocket client on loopback.                                          #
+#                                                                              #
+# Don't forget to run: setsebool -P httpd_can_network_connect 1                #
 ################################################################################
 -A OUTPUT -o lo -s 127.0.0.0/8 -d 127.0.0.0/8 -p tcp --dport 8081 -m state --state NEW,ESTABLISHED -j ACCEPT
 -A INPUT  -i lo -s 127.0.0.0/8 -d 127.0.0.0/8 -p tcp --sport 8081 -m state --state ESTABLISHED     -j ACCEPT

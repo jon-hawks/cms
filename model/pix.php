@@ -17,7 +17,7 @@ class Pix_model extends Model {
             $this->db->query("SELECT 1 FROM `pix_board` LIMIT 1");
         }catch(Exception $e){$this->reset();}
 
-        // Uncomment to rebuild manually.
+        // Temporary: rebuild imageboard tables on each model load; disable after rollout.
         $this->reset();
     }
 
@@ -290,7 +290,7 @@ class Pix_model extends Model {
                 `title`        CHAR(255)                       COMMENT 'Subject of the post.',
                 `message`      TEXT                            COMMENT 'Message of the post.',
                 `file_path`    CHAR(255)                       COMMENT 'Path to the file\'s URL.',
-                `file_hash`    CHAR(64)                        COMMENT 'The file\'s hash value. Used for duplicate detection.',
+                `file_hash`    CHAR(128)                       COMMENT 'The file\'s hash value. Used for duplicate detection.',
                 `file_name`    CHAR(255)                       COMMENT 'The file\'s original name.',
                 `file_size`    INT UNSIGNED                    COMMENT 'The size of the file in bytes.',
                 `image_width`  INT UNSIGNED                    COMMENT 'Width of the image in pixels.',

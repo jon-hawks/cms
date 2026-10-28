@@ -101,8 +101,8 @@ document.addEventListener("keydown", eventKeydownUploadCancel);
 var eventMousedownPrivacyPassword = function(event){
     if(event.button !== 0) return;
     for(var target = event.target; target && target !== this; target = target.parentNode){
-        if(typeof target.matches === "function" && target.matches("#privacy-password")){
-            target.checked = true;
+        if(typeof target.htmlFor === "string" && target.htmlFor === "privacy-password"){
+            document.getElementById(target.htmlFor).checked = true;
             focusInput(document.getElementById("upload-password"));
             return;
         }
@@ -115,7 +115,7 @@ document.addEventListener("mousedown", eventMousedownPrivacyPassword);
 var eventClickPrivacyPassword = function(event){
     if(event.button !== 0) return;
     for(var target = event.target; target && target !== this; target = target.parentNode){
-        if(typeof target.matches === "function" && target.matches("#privacy-password")){
+        if(typeof target.htmlFor === "string" && target.htmlFor === "privacy-password"){
             event.preventDefault();
             return;
         }
@@ -128,8 +128,8 @@ document.addEventListener("click", eventClickPrivacyPassword);
 var eventKeydownPrivacyPassword = function(event){
     if(event.keyCode !== 13 || event.shiftKey || event.altKey || event.ctrlKey) return;
     for(var target = event.target; target && target !== this; target = target.parentNode){
-        if(typeof target.matches === "function" && target.matches("#privacy-password")){
-            target.checked = true;
+        if(typeof target.htmlFor === "string" && target.htmlFor === "privacy-password"){
+            document.getElementById(target.htmlFor).checked = true;
             focusInput(document.getElementById("upload-password"));
             return;
         }

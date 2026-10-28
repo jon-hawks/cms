@@ -1,0 +1,22 @@
+{
+    "name": "PHP Development",
+    "image": "mcr.microsoft.com/devcontainers/php:latest",
+    "postAttachCommand": "bash .devcontainer/start.sh",
+    "forwardPorts": [443],
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "bmewburn.vscode-intelephense-client",
+                "xdebug.php-debug",
+                "EditorConfig.EditorConfig",
+                "esbenp.prettier-vscode",
+                "eamodio.gitlens",
+                "usernamehw.errorlens"
+            ],
+            "settings": {
+                "php.suggest.basic": false,
+                "editor.formatOnSave": true
+            }
+        }
+    }
+}

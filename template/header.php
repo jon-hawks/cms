@@ -4,11 +4,11 @@
 <table>
     <tr>
         <td rowspan="3"><a id="header-logo" class="ajax <?php echo link_active('/'); ?>" href="/"></a></td>
-        <td><div><div class="<?php echo link_active('/'); ?>"><a class="ajax" href="/">/index</a></div></div></td>
-        <td><div><div class="<?php echo link_active('/code'); ?>"><a class="ajax" href="/code">/code</a></div></div></td>
-        <td><div><div class="<?php echo link_active('/dox'); ?>"><a class="ajax" href="/dox">/dox</a></div></div></td>
-        <td><div><div class="<?php echo link_active('/upload'); ?>"><a class="ajax" href="/upload">/upload</a></div></div></td>
-        <td><div><div class="<?php echo link_active('/tool'); ?>"><a class="ajax" href="/tool">/tool</a></div></div></td>
+        <td><div><div class="<?php echo link_active('/');       ?>"><a class="ajax" href="/"       title="Front Page"   >/index </a></div></div></td>
+        <td><div><div class="<?php echo link_active('/code');   ?>"><a class="ajax" href="/code"   title="Code Snippets">/code  </a></div></div></td>
+        <td><div><div class="<?php echo link_active('/dox');    ?>"><a class="ajax" href="/dox"    title="Miscellaneous">/dox   </a></div></div></td>
+        <td><div><div class="<?php echo link_active('/upload'); ?>"><a class="ajax" href="/upload" title="File Uploader">/upload</a></div></div></td>
+        <td><div><div class="<?php echo link_active('/tool');   ?>"><a class="ajax" href="/tool"   title="Software"     >/tool  </a></div></div></td>
     </tr>
 
     <tr>

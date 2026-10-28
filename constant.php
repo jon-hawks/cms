@@ -3,13 +3,15 @@
 | Global constants.                                                                                                    |
 \---------------------------------------------------------------------------------------------------------------------*/
 
-/* Environment. */
+/* Environment; deployment overrides address-based development detection. */
 #define('ENVIRONMENT', 'development');
 #define('ENVIRONMENT', 'production');
-define('ENVIRONMENT', $_SERVER['SERVER_ADDR'] === '::1' || explode('.', $_SERVER['SERVER_ADDR'])[0] === '127' || $_SERVER['SERVER_NAME'] === 'localhost' ? 'development' : 'production');
+define('ENVIRONMENT', getenv('CMS_ENVIRONMENT') ?: (
+    $_SERVER['SERVER_ADDR'] === '::1' || explode('.', $_SERVER['SERVER_ADDR'])[0] === '127' || $_SERVER['SERVER_NAME'] === 'localhost' ? 'development' : 'production'
+));
 
 /* Import private constants in production environment. */
-if(ENVIRONMENT === 'production' && file_exists('private.php')) require('private.php');
+if(/*ENVIRONMENT === 'production' && */file_exists('private.php')) require('private.php');
 
 /* Directory paths. */
 if(!defined('CONTROLLER')) define('CONTROLLER', 'controller');

@@ -46,6 +46,8 @@ class Stox_model extends Model {
     | Queries a ticker.                                                        |
     \-------------------------------------------------------------------------*/
     public function query($ticker, $force = false){
+        logger('Querying ticker: '.$ticker);
+
         $sql = $this->db->prepare("SELECT * FROM `stox` WHERE `ticker` = :ticker LIMIT 1");
         $sql->execute([':ticker' => $ticker]);
         $result = $sql->fetch();

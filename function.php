@@ -113,7 +113,7 @@ require(ASSET.'/share/code/php/mime.php');
 require(ASSET.'/share/code/php/mime-to-extension.php');
 
 /* Uppercase first letter (multibyte-compatible). */
-require(ASSET.'/share/code/php/multibyte-ucfirst.php');
+if(!function_exists('mb_ucfirst')) require(ASSET.'/share/code/php/multibyte-ucfirst.php');
 
 /* Title case conversion. */
 require(ASSET.'/share/code/php/title-case.php');
@@ -189,7 +189,7 @@ function adjustBrightness($hex, $steps){
     // Normalize into a six character long hex string
     $hex = str_replace('#', '', $hex);
     if (strlen($hex) == 3) {
-        $hex = str_repeat(substr($hex,0,1), 2).str_repeat(substr($hex,1,1), 2).str_repeat(substr($hex,2,1), 2);
+        $hex = str_repeat(substr($hex, 0, 1), 2).str_repeat(substr($hex, 1, 1), 2).str_repeat(substr($hex, 2, 1), 2);
     }
 
     // Split into three parts: R, G and B
@@ -198,7 +198,7 @@ function adjustBrightness($hex, $steps){
 
     foreach ($color_parts as $color) {
         $color   = hexdec($color); // Convert to decimal
-        $color   = max(0,min(255,$color + $steps)); // Adjust color
+        $color   = max(0, min(255, $color + $steps)); // Adjust color
         $return .= str_pad(dechex($color), 2, '0', STR_PAD_LEFT); // Make two char hex code
     }
 

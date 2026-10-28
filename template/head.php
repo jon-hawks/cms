@@ -5,20 +5,20 @@
     console.debug("Begin JavaScript in <head>.");
 </script>
 
-<!-- Best-attempt HTTPS. -->
-<script nonce="<?php echo $security->nonce(); ?>">
-    if(location.protocol !== "https:"){
-        var path = "https:" + window.location.href.substring(window.location.protocol.length);
+<?php if($_SERVER['HTTPS'] !== 'on'){ ?>
+    <!-- Best-attempt HTTPS. -->
+    <script nonce="<?php echo $security->nonce(); ?>">
+        var path = "https://<?php echo $_SERVER['HTTP_HOST'].htmlspecialchars($_SERVER['REQUEST_URI']); ?>";
         var xhr = new XMLHttpRequest();
         xhr.open("HEAD", path);
         xhr.onreadystatechange = function(){
             if(this.readyState === this.DONE && this.status === 200){
-                location.href = path;
+                window.location.href = path;
             }
         };
         try{xhr.send();}finally{}
-    }
-</script>
+    </script>
+<?php } ?>
 
 <!-- Metadata. -->
 <?php foreach ($this->meta as &$value) $value = htmlentities($value); ?>
@@ -58,14 +58,17 @@
 <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com" />
 <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
 
-<?php if(ENVIRONMENT === 'development'){ ?>
+<?php #if(ENVIRONMENT === 'development'){ ?>
     <!-- Development environment; debugging. -->
     <script nonce="<?php echo $security->nonce(); ?>">
         <?php echo file_get_contents(ASSET.'/share/code/js/report-timers.js'); ?>
-        //reportTimers(true, 2, 2);
-        //reportTimers(true, 0, 0);
+        if(!window.reportTimersActive){
+            reportTimers(true, 2, 2);
+            //reportTimers(true, 0, 0);
+            window.reportTimersActive = true;
+        }
     </script>
-<?php } ?>
+<?php #} ?>
 
 <!-- Asynchronous include functions. -->
 <script nonce="<?php echo $security->nonce(); ?>"><?php echo file_get_contents(ASSET.'/share/code/js/asynchronous-css-include.js'); ?></script>
@@ -97,16 +100,17 @@
 <!--[if lt IE 9]><script nonce="<?php echo $security->nonce(); ?>" src="https://cdn.jsdelivr.net/npm/html5shiv@latest/dist/html5shiv.min.js"></script><![endif]-->
 <!--[if lt IE 9]><script nonce="<?php echo $security->nonce(); ?>" src="https://cdn.jsdelivr.net/flashcanvas/latest/flashcanvas.js"></script><![endif]-->
 <script nonce="<?php echo $security->nonce(); ?>">
-    jsAsync("https://cdn.jsdelivr.net/npm/es5-shim@latest/es5-sham.min.js", "/asset/misc/es5-sham.js");
-    jsAsync("https://cdn.jsdelivr.net/npm/es6-shim@latest/es6-shim.min.js", "/asset/misc/es6-shim.js");
-    jsAsync("https://cdn.jsdelivr.net/npm/json3@latest/lib/json3.min.js", "/asset/misc/json3.js");
-    jsAsync("https://cdn.jsdelivr.net/npm/dom4@latest/build/dom4.max.min.js", "/asset/misc/dom4.js");
-    jsAsync("https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js", "/asset/misc/jquery.js");
-    jsAsync("https://cdn.jsdelivr.net/npm/calc-polyfill@latest/calc.min.js", "/asset/misc/calc.js");
-    jsAsync("https://cdn.jsdelivr.net/npm/html5media@latest/dist/api/1.2.1/html5media.min.js", "/asset/misc/html5media.js");
+    //jsAsync("https://cdn.jsdelivr.net/npm/es5-shim@latest/es5-sham.min.js", "/asset/misc/es5-sham.js");
+    //jsAsync("https://cdn.jsdelivr.net/npm/es6-shim@latest/es6-shim.min.js", "/asset/misc/es6-shim.js");
+    //jsAsync("https://cdn.jsdelivr.net/npm/json3@latest/lib/json3.min.js", "/asset/misc/json3.js");
+    //jsAsync("https://cdn.jsdelivr.net/npm/dom4@latest/build/dom4.max.min.js", "/asset/misc/dom4.js");
+    //jsAsync("https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js", "/asset/misc/jquery.js");
+    //jsAsync("https://cdn.jsdelivr.net/npm/calc-polyfill@latest/calc.min.js", "/asset/misc/calc.js");
+    //jsAsync("https://cdn.jsdelivr.net/npm/html5media@latest/dist/api/1.2.1/html5media.min.js", "/asset/misc/html5media.js");
 </script>
 <script nonce="<?php echo $security->nonce(); ?>">jsAsync("https://cdn.jsdelivr.net/npm/fine-uploader@latest/fine-uploader/fine-uploader.min.js", "/asset/misc/fine-uploader.js");</script>
 <script nonce="<?php echo $security->nonce(); ?>"><?php echo file_get_contents(ASSET.'/share/code/js/focus-text-input.js'); ?></script>
+<script nonce="<?php echo $security->nonce(); ?>"><?php echo file_get_contents(ASSET.'/share/code/js/swap.js'); ?></script>
 
 <!-- Prefix Free. -->
 <script nonce="<?php echo $security->nonce(); ?>">
@@ -117,19 +121,24 @@
 <!-- Syntax Highlighting. -->
 <script nonce="<?php echo $security->nonce(); ?>">
     jsAsync("https://cdn.jsdelivr.net/highlight.js/latest/highlight.min.js", "/asset/misc/highlight.js", function(){
-        window.hljsLanguagesLoading = 5;
-        jsAsync("https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.14.2/languages/dos.min.js"       , "/asset/misc/highlight-dos.js"       , function(){window.hljsLanguagesLoading--});
-        jsAsync("https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.14.2/languages/pgsql.min.js"     , "/asset/misc/highlight-pgsql.js"     , function(){window.hljsLanguagesLoading--});
-        jsAsync("https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.14.2/languages/powershell.min.js", "/asset/misc/highlight-powershell.js", function(){window.hljsLanguagesLoading--});
-        jsAsync("https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.14.2/languages/vim.min.js"       , "/asset/misc/highlight-vim.js"       , function(){window.hljsLanguagesLoading--});
-        jsAsync("https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.14.2/languages/x86asm.min.js"    , "/asset/misc/highlight-x86asm.js"    , function(){window.hljsLanguagesLoading--});
-        if(typeof window.startHljsLanguages !== "number") window.startHljsLanguages = setInterval(function(){
-            if(window.hljsLanguagesLoading < 1){
-                clearInterval(window.startHljsLanguages);
-                setTimeout(function(){
-                    var code = document.getElementsByTagName("code");
-                    for(var i = code.length - 1; i >= 0; i--) window.hljs.highlightBlock(code[i]);
-                }, 1);
+        if(typeof window.startHljs !== "number") window.startHljs = setInterval(function(){
+            if(typeof window.hljs === "object"){
+                clearInterval(window.startHljs);
+                window.hljsLanguagesLoading = 5;
+                jsAsync("https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.14.2/languages/dos.min.js"       , "/asset/misc/highlight-dos.js"       , function(){window.hljsLanguagesLoading--});
+                jsAsync("https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.14.2/languages/pgsql.min.js"     , "/asset/misc/highlight-pgsql.js"     , function(){window.hljsLanguagesLoading--});
+                jsAsync("https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.14.2/languages/powershell.min.js", "/asset/misc/highlight-powershell.js", function(){window.hljsLanguagesLoading--});
+                jsAsync("https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.14.2/languages/vim.min.js"       , "/asset/misc/highlight-vim.js"       , function(){window.hljsLanguagesLoading--});
+                jsAsync("https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.14.2/languages/x86asm.min.js"    , "/asset/misc/highlight-x86asm.js"    , function(){window.hljsLanguagesLoading--});
+                if(typeof window.startHljsLanguages !== "number") window.startHljsLanguages = setInterval(function(){
+                    if(window.hljsLanguagesLoading < 1){
+                        clearInterval(window.startHljsLanguages);
+                        setTimeout(function(){
+                            var code = document.getElementsByTagName("code");
+                            for(var i = code.length - 1; i >= 0; i--) window.hljs.highlightBlock(code[i]);
+                        }, 1);
+                    }
+                }, 100);
             }
         }, 100);
     });
@@ -168,4 +177,4 @@
 <script nonce="<?php echo $security->nonce(); ?>">function throttle(n,l,t){var a,e,u,r,i=0;t||(t={});var o=function(){i=t.leading===!1?0:Date.now(),a=null,r=n.apply(e,u),a||(e=u=null)},c=function(){var c=Date.now();i||t.leading!==!1||(i=c);var f=l-(c-i);return e=this,u=arguments,0>=f||f>l?(a&&(clearTimeout(a),a=null),i=c,r=n.apply(e,u),a||(e=u=null)):a||t.trailing===!1||(a=setTimeout(o,f)),r};return c.cancel=function(){clearTimeout(a),i=0,a=e=u=null},c};</script>
 
 <!-- Websocket address. -->
-<script>window.websocketAddress = "<?php echo $_SERVER['SERVER_NAME']; ?>";</script>
+<script>window.websocketAddress = "wss://<?php echo $_SERVER['SERVER_NAME']; ?>";</script>

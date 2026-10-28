@@ -1,5 +1,5 @@
 ################################################################################
-# One OKE pod: Apache/PHP, MariaDB, and automatic HTTPS with Caddy.               #
+# One OKE pod: Apache/PHP with WebSocket autostart, MariaDB, and Caddy.           #
 ################################################################################
 apiVersion: apps/v1
 kind: Deployment
@@ -31,13 +31,17 @@ spec:
         - name: cms
           image: ghcr.io/jon-hawks/cms:$GITHUB_SHA
           env:
-            - name: POD_IP
-              valueFrom: {fieldRef: {fieldPath: status.podIP}}
+            # The loopback proxy address must not enable development behavior.
+            - name: CMS_ENVIRONMENT
+              value: production
           resources:
             requests: {cpu: 50m, memory: 128Mi}
             limits: {memory: 512Mi}
+          # Probe inside the container; Apache accepts only pod-local connections.
           readinessProbe:
-            tcpSocket: {port: 8080}
+            exec:
+              command: [php, -r, "exit(@fsockopen('127.0.0.1', 8080, timeout: 1) ? 0 : 1);"]
+            timeoutSeconds: 2
           volumeMounts:
             - {name: configuration, subPath: private.php, mountPath: /var/www/html/private.php, readOnly: true}
             - {name: data, subPath: upload, mountPath: /var/www/html/asset/upload}
@@ -65,17 +69,26 @@ spec:
         # Obtain and renew free certificates; keep them across redeployments.
         - name: caddy
           image: docker.io/library/caddy:2-alpine
-          command: [caddy]
-          args: [reverse-proxy, --from, "$CMS_HOSTNAME", --to, "$(POD_IP):8080"]
-          # Use the pod address so the CMS's existing environment detection works.
-          env:
-            - name: POD_IP
-              valueFrom: {fieldRef: {fieldPath: status.podIP}}
+          # Caddy owns ports 80 and 443; application servers listen on loopback.
+          command: [sh, -c]
+          args:
+            - |
+              exec caddy run --config - --adapter caddyfile <<'EOF'
+              {
+                  admin off
+              }
+              $CMS_HOSTNAME {
+                  # Forward protocol upgrades; application URI routing stays in PHP.
+                  @websocket header Upgrade websocket
+                  reverse_proxy @websocket 127.0.0.1:8081
+                  reverse_proxy 127.0.0.1:8080
+              }
+              EOF
           resources:
             requests: {cpu: 25m, memory: 32Mi}
             limits: {memory: 128Mi}
           readinessProbe:
-            tcpSocket: {port: 80}
+            tcpSocket: {port: 443}
           volumeMounts:
             - {name: data, subPath: tls, mountPath: /data}
 

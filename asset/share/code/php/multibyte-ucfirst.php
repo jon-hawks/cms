@@ -1,6 +1,8 @@
 <?php
 /**----------------------------------------------------------------------------\
 | PHP's missing mb_ucfirst function.                                           |
+|                                                                              |
+| No longer needed; this was introduced in PHP 8.4                             |
 +---------+--------+-----------+-----------------------------------------------+
 | @param  | string | $string   | The string being first-letter uppercased.     |
 | @param  | string | $encoding | Explicitly defined character encoding.        |

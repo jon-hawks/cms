@@ -33,6 +33,14 @@
     </p>
 </article>
 
+<article id="warez">
+    <h1>Software</h1>
+    <img src="/asset/image/misc/warez.svg" />
+    <p>
+            A curated list of software (and some preferred configuration files) has been added <a class="ajax" href="/warez">here</a><br />
+    </p>
+</article>
+
 <article id="snippets">
     <h1>Code</h1>
     <img src="/asset/image/misc/code.jpg" />
